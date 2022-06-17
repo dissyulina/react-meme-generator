@@ -1,5 +1,4 @@
 import React from "react";
-import memesData from "../memesData.js"
 
 export default function Meme() {
     const [meme, setMeme] = React.useState({
@@ -8,19 +7,28 @@ export default function Meme() {
         randomImage: "./images/memeimg.png"
     });
 
-    const [allMemeImages, setAllMemeImages] = React.useState(memesData);
+    const [allMemeImages, setAllMemeImages] = React.useState([]);
 
+    // Effect hook to fetch data from memes API
+    React.useEffect(() => {
+        console.log("Effect ran")
+        fetch("https://api.imgflip.com/get_memes")
+            .then(res => res.json())
+            .then(data => setAllMemeImages(data.data.memes)) // only save the memes array
+    }, [])
+
+    // Get a random meme image
     function getMemeImage() {
-        const memesArray = allMemeImages.data.memes
-        const randomNumber = Math.floor(Math.random() * memesArray.length)
+        const randomNumber = Math.floor(Math.random() * allMemeImages.length)
         setMeme(prevMeme => {
             return {
                 ...prevMeme,
-                randomImage: memesArray[randomNumber].url
+                randomImage: allMemeImages[randomNumber].url
             }
         })
     }
 
+    // Function to handle change on text input boxes
     function handleChange(event) {
         const {name, value} = event.target
         setMeme(prevMeme => {
